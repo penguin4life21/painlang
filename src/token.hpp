@@ -19,12 +19,16 @@ enum class Tokens {
     star,
     forward_slash,
     modulus,
-}
+};
+
+struct TokenType {
+
+};
 
 struct Token {
     TokenType type;
     std::optional<std::string> value {};
-}
+};
 
 class tokenizer
 {
