@@ -1,6 +1,8 @@
 #--[include]
-
+standard.io
 #--
 def int a = 1;
-def int b = 2;
-exit(a);
+def int ab = 2;
+def int abc = 3;
+def int a1 = 4;
+exit(a+ab);
