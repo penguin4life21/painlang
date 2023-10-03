@@ -5,8 +5,27 @@
 #include <sstream>
 
 #include "token.hpp"
+#include "syntaxanalyser.hpp"
 
 #include "utils/tokentypetostring.hpp"
+
+void printTokens(std::vector<Token> tokenVector) {
+    int i = 0;
+    while (i < tokenVector.size()) {
+        if (tokenVector[i].type == TokenType::var_name) {
+            std::cout << "var_name: " << tokenVector[i].value.value() << std::endl;
+            i++;
+            continue;
+        }
+        if (tokenVector[i].type == TokenType::integer_literal) {
+            std::cout << "integer_literal: " << tokenVector[i].value.value() << std::endl;
+            i++;
+            continue;
+        }
+        std::cout << returnStringFromType(tokenVector[i].type) << std::endl;
+        i++;
+    }
+}
 
 int main(int argc, char* argv[]) {
     std::ifstream file(argv[1]);
@@ -36,20 +55,13 @@ int main(int argc, char* argv[]) {
     std::vector<Token> tokens = tokenize(source);
 
     std::cout << std::endl << std::endl;
+    printTokens(tokens);
 
-    // Printing tokens to command line    
-    {
-        int i = 0;
-        while (i < tokens.size()) {
-            if (tokens[i].type == TokenType::var_name) {
-                std::cout << "var_name: " << tokens[i].value.value() << std::endl;
-                i++;
-                continue;
-            }
-            std::cout << returnStringFromType(tokens[i].type) << std::endl;
-            i++;
-        }
-    }
+    std::vector<Token> parsedTokens = parse(tokens);
+
+    std::cout << std::endl << std::endl;
+
+    printTokens(parsedTokens);
 
     return 0;
 }

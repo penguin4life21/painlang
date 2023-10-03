@@ -5,7 +5,7 @@
 #include <optional>
 #include <iostream>
 
-const std::string specialEscapeChars = "()+-";
+const std::string specialEscapeChars = "()+-;";
 
 enum class TokenType {
     exit,
@@ -66,7 +66,6 @@ inline std::vector<Token> tokenize(std::string code) {
                 i++;
             }
             if (code[i + 1] == '(') {
-            
                 i++;
             }
             if (code[i+1] == ')') {
@@ -96,12 +95,44 @@ inline std::vector<Token> tokenize(std::string code) {
         if (code[i] == ')') {
             tokens.push_back({.type = TokenType::end_paren});
         }
-        if (code[i] == '=') {
+        if (code[i] == '=' && code[i + 1] != '=' && code[i-1] != '=') {
             tokens.push_back({.type = TokenType::assign});
+        }
+        if (code[i] == '+') {
+            tokens.push_back({.type = TokenType::plus});
+        }
+        if (code[i] == '-') {
+            tokens.push_back({.type = TokenType::minus});
+        }
+        if (code[i] == '*') {
+            tokens.push_back({.type = TokenType::star});
+        }
+        if (code[i] == '/') {
+            tokens.push_back({.type = TokenType::forward_slash});
+        }
+        if (code[i] == '%') {
+            tokens.push_back({.type = TokenType::modulus});
         }
 
         if (std::isdigit(code[i])) {
-            // buffer += 
+            buffer += code[i];
+            std::cout << buffer << std::endl;
+            std::cout << "-" << isSpecialChar(code[i + 1]) << std::endl;
+            if (isSpecialChar(code[i + 1]) == 1) {
+                tokens.push_back({.type = TokenType::integer_literal, .value = buffer});
+            } else {
+                while (!(std::isspace(code[i + 1]) || isSpecialChar(code[i + 1]) == 1)) {
+                    if (std::isdigit(code[i + 1])) {
+                        buffer += code[i + 1];
+                        i++;
+                    } else {
+                        tokens.push_back({.type = TokenType::integer_literal, .value = buffer});
+                        break;
+                    }
+                }
+                tokens.push_back({.type = TokenType::integer_literal, .value = buffer});
+            }
+            buffer.clear();
         }
 
         i++;

@@ -2,7 +2,7 @@
 standard.io
 #--
 def int a = 1;
-def int ab = 2;
-def int abc = 3;
-def int a1 = 4;
+def int b = 21;
+def int c = 321;
+def int d;
 exit(a+ab);

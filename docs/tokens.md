@@ -9,7 +9,8 @@
 |end_curly|`}`|
 |def|`def <type> <varname>`|
 |func|`function <name>(<args>)`|
-|eq|`=`|
+|eq|`==`|
+|assign|`=`|
 |plus|`+`|
 |minus|`-`|
 |star|`*`|
