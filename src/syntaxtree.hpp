@@ -26,8 +26,9 @@ struct Node {
     std::optional<std::string> value;
 };
 
-Node convertToAST(std::vector<Tokens> tokens) {
+Node convertToAST(std::vector<Token> tokens) {
     Node root;
+    root.type = NodeType::root;
     
     while (!tokens.empty()) {
         if (tokens[0].type == TokenType::def) {
@@ -40,10 +41,12 @@ Node convertToAST(std::vector<Tokens> tokens) {
             tokens.erase(tokens.begin());
 
             if (currentLine.size() == 3) {
-                currNode.type = NodeType::assign;
-                Node varNameNode;
-                varNameNode.type = NodeType::var_name;
-                varNameNode.value = currentLine[2].value;
+                if (currentLine[0].type == TokenType::def) {
+                    currNode.type = NodeType::assign;
+                    Node varNameNode;
+                    varNameNode.type = NodeType::var_name;
+                    varNameNode.value = currentLine[2].value;
+                }
             }
 
         }
