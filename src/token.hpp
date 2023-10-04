@@ -38,11 +38,6 @@ struct Token {
 };
 
 bool isSpecialChar(char character) {
-    // if (specialEscapeChars.find(character) != std::string::npos) {
-    //     std::cout << "1" << std::endl;
-    // } else {
-    //     std::cout << "0" << std::endl;
-    // }
     return(specialEscapeChars.find(character) != std::string::npos);
 }
 
