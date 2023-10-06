@@ -3,6 +3,6 @@ standard.io
 #--
 def int a = 1;
 def int b = 21;
-def int c = 321;
+def int c = a + b;
 def int d;
 exit(a+ab);

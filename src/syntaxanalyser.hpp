@@ -13,6 +13,20 @@ struct Var {
     TokenType type;
 };
 
+int doesVarExistWithName(std::vector<Var> currVars, std::string name) {
+    if (currVars.size() == 0) {
+        return(0);
+    }
+    int i = 0;
+    while (i < currVars.size()) {
+        if (currVars[i].name.value() == name) {
+            return(1);
+        }
+        i++;
+    }
+    return(0);
+}
+
 inline std::vector<Token> parse(std::vector<Token> tokens) {
     std::vector<Token> returnTokens;
     std::vector<Token> currentLine;
@@ -30,7 +44,11 @@ inline std::vector<Token> parse(std::vector<Token> tokens) {
         if (currentLine[0].type == TokenType::def) {
             // Declaration
             if (currentLine.size() == 3) {
-                
+                if (currentLine[1].type == TokenType::integer && currentLine[2].type == TokenType::var_name) {
+                    if (doesVarExistWithName(definedVars, currentLine[2].value.value()) == 0) {
+                        definedVars.push_back({.name = currentLine[2].value.value(), .type = currentLine[1].type});
+                    }
+                }
             } else
             // Assignment with value
             if (currentLine.size() == 5) {

@@ -12,6 +12,11 @@
 void printTokens(std::vector<Token> tokenVector) {
     int i = 0;
     while (i < tokenVector.size()) {
+        if (tokenVector[i].type == TokenType::end_line) {
+            std::cout << "end_line" << std::endl << std::endl;
+            i++;
+            continue;
+        }
         if (tokenVector[i].type == TokenType::var_name) {
             std::cout << "var_name: " << tokenVector[i].value.value() << std::endl;
             i++;
@@ -41,7 +46,7 @@ int main(int argc, char* argv[]) {
     file.close();
 
     if (source.substr(0, 12) != "#--[include]") {
-        std::cerr << "Invalid code header";
+        std::cerr << "Invalid code header" << std::endl;
     }
     source.erase(0, 12);
     
@@ -57,11 +62,11 @@ int main(int argc, char* argv[]) {
     std::cout << std::endl << std::endl;
     printTokens(tokens);
 
-    std::vector<Token> parsedTokens = parse(tokens);
+    std::vector<Token> analysedTokens = parse(tokens);
 
     std::cout << std::endl << std::endl;
 
-    printTokens(parsedTokens);
+    printTokens(analysedTokens);
 
     return 0;
 }

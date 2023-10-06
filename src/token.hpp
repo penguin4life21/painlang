@@ -11,6 +11,8 @@ enum class TokenType {
     exit,
     integer,
     integer_literal,
+    string,
+    string_literal,
     begin_paren,
     end_paren,
     begin_curly,
@@ -38,11 +40,6 @@ struct Token {
 };
 
 bool isSpecialChar(char character) {
-    // if (specialEscapeChars.find(character) != std::string::npos) {
-    //     std::cout << "1" << std::endl;
-    // } else {
-    //     std::cout << "0" << std::endl;
-    // }
     return(specialEscapeChars.find(character) != std::string::npos);
 }
 
@@ -116,8 +113,6 @@ inline std::vector<Token> tokenize(std::string code) {
 
         if (std::isdigit(code[i])) {
             buffer += code[i];
-            std::cout << buffer << std::endl;
-            std::cout << "-" << isSpecialChar(code[i + 1]) << std::endl;
             if (isSpecialChar(code[i + 1]) == 1) {
                 tokens.push_back({.type = TokenType::integer_literal, .value = buffer});
             } else {
