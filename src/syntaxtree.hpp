@@ -24,9 +24,11 @@ enum class NodeType {
 
 struct Node {
     std::vector<Node> children;
-    std::optional<NodeType> type;
+    NodeType type;
     std::optional<std::string> value;
 };
+
+#include "utils/printAST.hpp"
 
 Node convertToAST(std::vector<Token> tokens) {
     std::vector<Token> tokensClone = tokens;
@@ -56,6 +58,8 @@ Node convertToAST(std::vector<Token> tokens) {
                     varNameNode.value = currentLine[2].value;
 
                     currentNode.children.push_back(varNameNode);
+
+                    root.children.push_back(currentNode);
             } else if (currentLine.size() == 5) {
                     currentNode.type = NodeType::assign;
 
@@ -83,16 +87,14 @@ Node convertToAST(std::vector<Token> tokens) {
 
                 currentLine.erase(currentLine.begin(), currentLine.begin() + 4);
 
+
+                int lineCountPrint = 0;
                 std::cout << "[";
-                while (currentLine.size() > 1) {
-                    std::cout << returnStringFromType(currentLine[0].type) << ", ";
-                    currentLine.erase(currentLine.begin());
+                while (lineCountPrint < currentLine.size() - 1) {
+                    std::cout << returnStringFromType(currentLine[lineCountPrint].type) << ", ";
+                    lineCountPrint++;
                 }
-                std::cout << returnStringFromType(currentLine[0].type) << "]\n";
-                
-
-                
-
+                std::cout << returnStringFromType(currentLine[lineCountPrint].type) << "]\n";
 
                 Node equationNode;
 
@@ -105,5 +107,7 @@ Node convertToAST(std::vector<Token> tokens) {
         }
     }
 
+    printTree(root);
+    
     return root;
 }
