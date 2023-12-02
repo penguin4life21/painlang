@@ -5,7 +5,7 @@
 #include <optional>
 #include <iostream>
 
-const std::string specialEscapeChars = "()+-;";
+const std::string specialEscapeChars = "()+-*/%;";
 
 enum class TokenType {
     exit,
@@ -62,54 +62,47 @@ inline std::vector<Token> tokenize(std::string code) {
                 buffer += code[i + 1];
                 i++;
             }
-            if (code[i + 1] == '(') {
-                i++;
-            }
-            if (code[i+1] == ')') {
-                i++;
-                continue;
-            }
         }
         if (buffer == "def") {
             tokens.push_back({.type = TokenType::def});
             buffer.clear();
-        }
+        } else
         if (buffer == "int") {
             tokens.push_back({.type = TokenType::integer});
             buffer.clear();
-        }
+        } else
         if (buffer == "exit") {
             tokens.push_back({.type = TokenType::exit});
             buffer.clear();
-        }
+        } else
         if (buffer != "") {    
             tokens.push_back({.type = TokenType::var_name, .value = buffer});
-            buffer.clear();  
-        }
+            buffer.clear(); 
+        } else
         if (code[i] == '(') {
             tokens.push_back({.type = TokenType::begin_paren});
-        }
+        } else
         if (code[i] == ')') {
             tokens.push_back({.type = TokenType::end_paren});
-        }
+        } else
         if (code[i] == '=' && code[i + 1] != '=' && code[i-1] != '=') {
             tokens.push_back({.type = TokenType::assign});
-        }
+        } else
         if (code[i] == '+') {
             tokens.push_back({.type = TokenType::plus});
-        }
+        } else 
         if (code[i] == '-') {
             tokens.push_back({.type = TokenType::minus});
-        }
+        } else
         if (code[i] == '*') {
             tokens.push_back({.type = TokenType::star});
-        }
+        } else
         if (code[i] == '/') {
             tokens.push_back({.type = TokenType::forward_slash});
-        }
+        } else
         if (code[i] == '%') {
             tokens.push_back({.type = TokenType::modulus});
-        }
+        } else
 
         if (std::isdigit(code[i])) {
             buffer += code[i];

@@ -87,5 +87,6 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp"
-    }
+    },
+    "discord.enabled": true
 }

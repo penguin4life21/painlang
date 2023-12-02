@@ -6,6 +6,9 @@
 
 #include "token.hpp"
 #include "syntaxanalyser.hpp"
+#include "syntaxtree.hpp"
+
+#include "interpret.hpp"
 
 #include "utils/tokentypetostring.hpp"
 
@@ -32,8 +35,11 @@ void printTokens(std::vector<Token> tokenVector) {
     }
 }
 
+
+// argv[1] = Run Mode ("-i" -> Interpret, "-c" -> Compile)
+// argv[2] = Input File
 int main(int argc, char* argv[]) {
-    std::ifstream file(argv[1]);
+    std::ifstream file(argv[2]);
 
     if (!file) {
         std::cerr << "Error opening file" << std::endl;
@@ -59,14 +65,20 @@ int main(int argc, char* argv[]) {
 
     std::vector<Token> tokens = tokenize(source);
 
-    std::cout << std::endl << std::endl;
-    printTokens(tokens);
-
     std::vector<Token> analysedTokens = parse(tokens);
 
-    std::cout << std::endl << std::endl;
-
     printTokens(analysedTokens);
+
+    Node ast = convertToAST(analysedTokens);
+
+    return 0;
+
+    std::cout << "\n\n";
+
+    std::string argv_1 = argv[1];
+    if (argv_1 == "-i") {
+        interpret(analysedTokens);
+    }
 
     return 0;
 }

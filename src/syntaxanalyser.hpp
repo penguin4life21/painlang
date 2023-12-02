@@ -42,9 +42,12 @@ inline std::vector<Token> parse(std::vector<Token> tokens) {
         tokens.erase(tokens.begin());
 
         if (currentLine[0].type == TokenType::def) {
+            if (currentLine[2].type != TokenType::var_name) {
+                std::cerr << "Error: on line " << i << "not a valid var name" << std::endl;
+            }
             // Declaration
             if (currentLine.size() == 3) {
-                if (currentLine[1].type == TokenType::integer && currentLine[2].type == TokenType::var_name) {
+                if (currentLine[1].type == TokenType::integer) {
                     if (doesVarExistWithName(definedVars, currentLine[2].value.value()) == 0) {
                         definedVars.push_back({.name = currentLine[2].value.value(), .type = currentLine[1].type});
                     }
@@ -52,35 +55,24 @@ inline std::vector<Token> parse(std::vector<Token> tokens) {
             } else
             // Assignment with value
             if (currentLine.size() == 5) {
+                if (currentLine[1].type == TokenType::integer) {
+                    if (currentLine[4].type == TokenType::integer_literal) {
+                        
+                    } else {
 
+                    }
+                }
             } else
             // Assignment with Expression
-            if (currentLine.size() > 5) {
+            if (currentLine.size() >= 5) {
 
+            } else {
+                std::cerr << "Error: on line " << i << " not valid variable declaration" << std::endl;
             }
         } else
         if (currentLine[0].type == TokenType::exit) {
 
         } 
-
-        // {
-        //     int k = 0;
-        //     while (k < currentLine.size()) {
-        //         if (currentLine[k].type == TokenType::var_name) {
-        //             std::cout << "var_name: " << currentLine[k].value.value() << std::endl;
-        //             k++;
-        //             continue;
-        //         }
-        //         if (currentLine[k].type == TokenType::integer_literal) {
-        //             std::cout << "integer_literal: " << currentLine[k].value.value() << std::endl;
-        //             k++;
-        //             continue;
-        //         }
-        //         std::cout << returnStringFromType(currentLine[k].type) << std::endl;
-        //         k++;
-        //     }
-        // } 
-
 
         int l = 0;
         while (l < currentLine.size()) {

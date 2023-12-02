@@ -4,5 +4,9 @@ standard.io
 def int a = 1;
 def int b = 21;
 def int c = a + b;
+def int c2 = a + (b*c);
 def int d;
-exit(a+ab);
+def int e = -123;
+def int f = c;
+def int g = 2 *(a+b);
+exit(a+a*b);
