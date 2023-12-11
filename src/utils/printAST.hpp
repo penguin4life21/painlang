@@ -3,7 +3,7 @@
 #include "../syntaxtree.hpp"
 
 std::string convertNodeTypeToString(NodeType type) {
-    NodeType mapTypes[10] = {
+    NodeType mapTypes[11] = {
         NodeType::root,
         NodeType::exit,
         NodeType::assign,
@@ -14,9 +14,10 @@ std::string convertNodeTypeToString(NodeType type) {
         NodeType::operation_multi,
         NodeType::operation_divide,
         NodeType::operation_modulus,
+        NodeType::operation_pow
     };
     
-    std::string mapStrings[10] = {
+    std::string mapStrings[11] = {
         "root",
         "exit",
         "assign",
@@ -26,7 +27,8 @@ std::string convertNodeTypeToString(NodeType type) {
         "operation_minus",
         "operation_multi",
         "operation_divide",
-        "operation_modulus"
+        "operation_modulus",
+        "operation_pow"
     };
 
     int i = 0;

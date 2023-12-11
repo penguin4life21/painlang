@@ -5,7 +5,7 @@
 #include <optional>
 #include <iostream>
 
-const std::string specialEscapeChars = "()+-*/%;";
+const std::string specialEscapeChars = "()+-*/%^;";
 
 enum class TokenType {
     exit,
@@ -27,6 +27,7 @@ enum class TokenType {
     star,
     forward_slash,
     modulus,
+    pow,
     whitespace,
     end_line,
     var_name
@@ -102,6 +103,9 @@ inline std::vector<Token> tokenize(std::string code) {
         } else
         if (code[i] == '%') {
             tokens.push_back({.type = TokenType::modulus});
+        } else
+        if (code[i] == '^') {
+            tokens.push_back({.type = TokenType::pow});
         } else
 
         if (std::isdigit(code[i])) {

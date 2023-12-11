@@ -60,5 +60,8 @@ std::string returnStringFromType(TokenType type) {
     if (type == TokenType::var_name) {
         return("var_name");
     }
+    if (type == TokenType::pow) {
+        return("pow");
+    }
     return("");
 }
