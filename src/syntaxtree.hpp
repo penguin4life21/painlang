@@ -7,7 +7,6 @@
 #include <stack>
 
 #include "token.hpp"
-
 #include "utils/tokentypetostring.hpp"
 
 enum class NodeType
@@ -22,7 +21,9 @@ enum class NodeType
     operation_multi,
     operation_divide,
     operation_modulus,
-    operation_pow
+    operation_pow,
+    begin_paren,
+    end_paren
 };
 
 struct Node
@@ -32,95 +33,114 @@ struct Node
     std::optional<std::string> value;
 };
 
-int getOperatorPrecedence(const std::string &op)
+int getOperatorPrecedence(const TokenType &op)
 {
-    if (op == "+" || op == "-")
+    if (op == TokenType::plus || op == TokenType::minus)
+    {
         return 1;
-    if (op == "*" || op == "/" || op == "%")
+    }
+    if (op == TokenType::star || op == TokenType::forward_slash || op == TokenType::modulus)
+    {
         return 2;
-    if (op == "^")
+    }
+    if (op == TokenType::pow)
+    {
         return 3;
-    return 0; // Assuming 0 precedence for non-operators
+    }
+    return 0;
 }
 
-//! SEGFAULT in here
-Node shuntingYardAlgorithm(const std::vector<Token> &equation)
+int getOperatorPrecedence(NodeType op)
+{
+    if (op == NodeType::operation_plus || op == NodeType::operation_minus)
+    {
+        return 1;
+    }
+    if (op == NodeType::operation_multi || op == NodeType::operation_divide || op == NodeType::operation_modulus)
+    {
+        return 2;
+    }
+    if (op == NodeType::operation_pow)
+    {
+        return 3;
+    }
+    return 0;
+}
+
+#include "utils/printAST.hpp"
+
+bool isOperator(TokenType type)
+{
+    return type == TokenType::plus || type == TokenType::minus ||
+           type == TokenType::star || type == TokenType::forward_slash ||
+           type == TokenType::modulus || type == TokenType::pow;
+}
+
+NodeType tokenTypeToNodeType(TokenType type)
+{
+    switch (type) {
+        case TokenType::plus:
+            return NodeType::operation_plus;
+        case TokenType::minus:
+            return NodeType::operation_minus;
+        case TokenType::star:
+            return NodeType::operation_multi;
+        case TokenType::forward_slash:
+            return NodeType::operation_divide;
+        case TokenType::modulus:
+            return NodeType::operation_modulus;
+        case TokenType::pow:
+            return NodeType::operation_pow;
+        default:
+            throw std::invalid_argument("Invalid token type for conversion");
+    }
+}
+
+Node shuntingYardAlgorithm(std::vector<Token> &tokens)
 {
     std::stack<Token> operatorStack;
-    std::vector<Token> outputQueue;
+    std::stack<Node> operandStack;
 
-    std::function<void()> processOperator = [&]()
+    while (!tokens.empty())
     {
-        while (!operatorStack.empty() &&
-               getOperatorPrecedence(operatorStack.top().value.value_or("")) >=
-                   getOperatorPrecedence(outputQueue.back().value.value_or("")))
+        Token token = tokens[0];
+        tokens.erase(tokens.begin());
+
+        if (token.type == TokenType::integer_literal)
         {
-            outputQueue.push_back(operatorStack.top());
-            operatorStack.pop();
+            Node operandNode;
+            operandNode.type = NodeType::integer_literal;
+            operandNode.value = token.value;
+            operandStack.push(operandNode);
         }
-        operatorStack.push(outputQueue.back());
-        if (!outputQueue.empty()) {
-            outputQueue.pop_back(); 
-        } else {
-            //! Case handling
-            std::cout << "In processOperator: Could not pop_back on outputQueue due to it being empty" << std::endl;
-        }
-    };
-
-    std::function<void()> processCloseParen = [&]()
-    {
-        while (!operatorStack.empty() && operatorStack.top().type != TokenType::begin_paren)
+        else if (token.type == TokenType::var_name)
         {
-            outputQueue.push_back(operatorStack.top());
-            operatorStack.pop();
+            Node operandNode;
+            operandNode.type = NodeType::var_name;
+            operandNode.value = token.value;
+            operandStack.push(operandNode);
         }
-        operatorStack.pop(); 
-    };
-
-    std::stack<Node> syntaxTreeStack;
-
-    std::function<void()> buildSyntaxTree = [&]()
-    {
-        Node operatorNode;
-        operatorNode.type = NodeType::operation_plus; 
-        operatorNode.value = outputQueue.back().value;
-
-        if (!outputQueue.empty())
+        else if (isOperator(token.type))
         {
-            outputQueue.pop_back();
-        }
-        else
-        {
-            //! Case handling
-            std::cout << "In buildSyntaxTree: Could not pop_back on outputQueue due to it being empty" << std::endl;
-        }
+            while (!operatorStack.empty() &&
+                   getOperatorPrecedence(operatorStack.top().type) >= getOperatorPrecedence(token.type))
+            {
+                Node rightOperand = operandStack.top();
+                operandStack.pop();
 
-        operatorNode.children.push_back({}); 
-        operatorNode.children.push_back({}); 
+                Node leftOperand = operandStack.top();
+                operandStack.pop();
 
-        std::swap(operatorNode.children[0], syntaxTreeStack.top());
-        syntaxTreeStack.pop();
-        std::swap(operatorNode.children[1], syntaxTreeStack.top());
-        syntaxTreeStack.pop();
+                Node operationNode;
+                operationNode.type = tokenTypeToNodeType(operatorStack.top().type);
+                operationNode.children.push_back(leftOperand);
+                operationNode.children.push_back(rightOperand);
 
-        syntaxTreeStack.push(operatorNode);
-    };
+                operandStack.push(operationNode);
 
-    std::function<void(const Token &)> processToken = [&](const Token &token)
-    {
-        if (token.type == TokenType::integer_literal ||
-            token.type == TokenType::var_name)
-        {
-            outputQueue.push_back(token);
-        }
-        else if (token.type == TokenType::plus ||
-                 token.type == TokenType::minus ||
-                 token.type == TokenType::star ||
-                 token.type == TokenType::forward_slash ||
-                 token.type == TokenType::modulus ||
-                 token.type == TokenType::pow)
-        {
-            processOperator();
+                operatorStack.pop();
+            }
+
             operatorStack.push(token);
         }
         else if (token.type == TokenType::begin_paren)
@@ -129,77 +149,53 @@ Node shuntingYardAlgorithm(const std::vector<Token> &equation)
         }
         else if (token.type == TokenType::end_paren)
         {
-            processCloseParen();
-        }
-    };
-
-    std::function<void()> processOutputQueue = [&]()
-    {
-        while (!outputQueue.empty())
-        {
-            if (outputQueue.back().type == TokenType::plus ||
-                outputQueue.back().type == TokenType::minus ||
-                outputQueue.back().type == TokenType::star ||
-                outputQueue.back().type == TokenType::forward_slash ||
-                outputQueue.back().type == TokenType::modulus ||
-                outputQueue.back().type == TokenType::pow)
+            while (!operatorStack.empty() && operatorStack.top().type != TokenType::begin_paren)
             {
-                buildSyntaxTree();
-            }
-            else
-            {
-                syntaxTreeStack.push({.type = NodeType::integer_literal,
-                                      .value = outputQueue.back().value});
-            }
-            if (!outputQueue.empty()) {
-                outputQueue.pop_back();
-            } else {
-                //! Case handling
-                std::cout << "In processOutputQueue: Could not pop_back on outputQueue due to it being empty" << std::endl;
-            }
-        }
-    };
+                Node rightOperand = operandStack.top();
+                operandStack.pop();
 
-    std::function<void()> processOperatorStack = [&]()
-    {
-        while (!operatorStack.empty())
-        {
-            outputQueue.push_back(operatorStack.top());
+                Node leftOperand = operandStack.top();
+                operandStack.pop();
+
+                Node operationNode;
+                operationNode.type = tokenTypeToNodeType(operatorStack.top().type);
+                operationNode.children.push_back(leftOperand);
+                operationNode.children.push_back(rightOperand);
+
+                operandStack.push(operationNode);
+
+                operatorStack.pop();
+            }
+        
             operatorStack.pop();
         }
-    };
-
-    // Main loop
-    std::vector<Token>::const_reverse_iterator it = equation.rbegin(); 
-    while (it != equation.rend())
-    {
-        processToken(*it);
-        it++;
     }
 
-    return Node();
+    return(Node());
 
-    processOutputQueue();
-    processOperatorStack();
-
-
-    if (!syntaxTreeStack.empty())
+    while (!operatorStack.empty())
     {
-        return syntaxTreeStack.top();
+        Node rightOperand = operandStack.top();
+        operandStack.pop();
+
+        Node leftOperand = operandStack.top();
+        operandStack.pop();
+
+        Node operationNode;
+        operationNode.type = tokenTypeToNodeType(operatorStack.top().type);
+        operationNode.children.push_back(leftOperand);
+        operationNode.children.push_back(rightOperand);
+
+        operandStack.push(operationNode);
+
+        operatorStack.pop();
     }
-    else
-    {
-        std::cerr << "Error building syntax tree!" << std::endl;
-        return Node(); 
-    }
+
+    return operandStack.top();
 }
-
-#include "utils/printAST.hpp"
 
 Node convertToAST(std::vector<Token> tokens)
 {
-    std::vector<Token> tokensClone = tokens;
-
     Node root;
     root.type = NodeType::root;
 
@@ -215,8 +211,6 @@ Node convertToAST(std::vector<Token> tokens)
                 currentLine.push_back(tokens[0]);
                 tokens.erase(tokens.begin());
             }
-
-            std::cout << currentLine.size() << "\n";
 
             tokens.erase(tokens.begin());
 
@@ -265,20 +259,12 @@ Node convertToAST(std::vector<Token> tokens)
 
                 currentLine.erase(currentLine.begin(), currentLine.begin() + 4);
 
-                std::cout << "[";
-                int lineCountPrint = 0;
-                while (lineCountPrint < currentLine.size())
-                {
-                    std::cout << returnStringFromType(currentLine[lineCountPrint].type) << ", ";
-                    lineCountPrint++;
-                }
-                std::cout << returnStringFromType(currentLine[lineCountPrint].type) << "]\n";
-
-                // ! TODO :::: DO ASAP
-                // Equation Parsing
                 Node equationNode = shuntingYardAlgorithm(currentLine);
                 printTree(equationNode);
-                std::cout << "\n\n";
+                std::cout << "\n";
+
+                currentNode.children.push_back(equationNode);
+                root.children.push_back(currentNode);
             }
         }
         else

@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
 
     printTokens(analysedTokens);
 
-    Node ast = convertToAST(analysedTokens);
+    // Node ast = convertToAST(tokens);
 
     return 0;
 

@@ -7,7 +7,10 @@
 
 const std::string specialEscapeChars = "()+-*/%^;";
 
+// TokenType::empty is to only be used as a place holder
+
 enum class TokenType {
+    empty,
     exit,
     integer,
     integer_literal,
@@ -38,6 +41,11 @@ enum class TokenType {
 struct Token {
     TokenType type;
     std::optional<std::string> value {};
+
+    void clear() {
+        type = TokenType::empty;
+        value.reset();
+    }
 };
 
 bool isSpecialChar(char character) {
