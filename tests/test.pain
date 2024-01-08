@@ -4,10 +4,10 @@ standard.io
 def int a = 1;
 def int b = 21;
 def int c = a b +;
-def int c2 = b c * 5 -;
+def int c2 = a b c *+;
 def int d;
 def int e = -123;
 def int f = c;
-def int g = a b + 2 *;
+def int g = 2 a b + *; 
 def int h = e 2 ^;
-exit(a+a*b);
+exit(a a b * +);

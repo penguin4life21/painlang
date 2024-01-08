@@ -65,9 +65,9 @@ int main(int argc, char* argv[]) {
 
     std::vector<Token> tokens = tokenize(source);
 
-    std::vector<Token> analysedTokens = parse(tokens);
+    // std::vector<Token> analysedTokens = parse(tokens);
 
-    printTokens(analysedTokens);
+    printTokens(tokens);
 
     // Node ast = convertToAST(tokens);
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
 
     std::string argv_1 = argv[1];
     if (argv_1 == "-i") {
-        interpret(analysedTokens);
+        interpret(tokens);
     }
 
     return 0;
