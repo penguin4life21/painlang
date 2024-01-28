@@ -6,7 +6,6 @@
 
 #include "token.hpp"
 #include "syntaxanalyser.hpp"
-#include "syntaxtree.hpp"
 
 #include "interpret.hpp"
 
@@ -65,11 +64,10 @@ int main(int argc, char* argv[]) {
 
     std::vector<Token> tokens = tokenize(source);
 
-    // std::vector<Token> analysedTokens = parse(tokens);
+    std::vector<Token> analysedTokens = parse(tokens);
 
-    printTokens(tokens);
-
-    // Node ast = convertToAST(tokens);
+    // printTokens(tokens);
+    printTokens(analysedTokens);
 
     return 0;
 

@@ -27,5 +27,7 @@ void handleVariable(Line line, std::vector<InterpretVar> *vars) {
 }
 
 void interpret(std::vector<Token> tokens) {
+    std::vector<Line> program;
+
     
 }
