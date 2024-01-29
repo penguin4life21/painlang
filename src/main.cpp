@@ -69,8 +69,6 @@ int main(int argc, char* argv[]) {
     // printTokens(tokens);
     printTokens(analysedTokens);
 
-    return 0;
-
     std::cout << "\n\n";
 
     std::string argv_1 = argv[1];

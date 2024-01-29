@@ -1,6 +1,6 @@
 |Token|Symbol|
 |---|---|
-|endl|`;`|
+|end_line|`;`|
 |exit|`exit`|
 |integer|`<num>`|
 |begin_paren|`(`|
